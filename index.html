@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>성남물빛정원 랜덤 퀴즈쇼!</title>
+<title>김규원의 캐치규! - 물빛정원편</title>
+<meta name="description" content="김규원의 캐치규! 물빛정원편 - 성남물빛정원 랜덤 퀴즈쇼" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="김규원의 캐치규! - 물빛정원편" />
+<meta property="og:description" content="맞히면 탈출 성공! 성남물빛정원 랜덤 퀴즈쇼에 도전해보세요." />
+<meta property="og:image" content="logo_1.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="김규원의 캐치규! - 물빛정원편" />
+<meta name="twitter:description" content="맞히면 탈출 성공! 성남물빛정원 랜덤 퀴즈쇼에 도전해보세요." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet" />
@@ -16,7 +24,8 @@
     --blue: #3ec1ff;
     --blue-deep: #1a8cd8;
     --green: #4ade80;
-    --red: #ff4d4d;
+    --purple: #a855f7;
+    --purple-deep: #7c3aed;
     --ink: #1b1b1b;
     --paper: #fff7d6;
   }
@@ -37,13 +46,11 @@
     overflow-x: hidden;
   }
 
-  body::before, body::after {
+  body::before {
     content: '';
     position: fixed;
     pointer-events: none;
     z-index: 0;
-  }
-  body::before {
     inset: 0;
     background:
       repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 2px, transparent 2px 18px);
@@ -78,24 +85,24 @@
     transform: rotate(-3deg);
     box-shadow: 4px 4px 0 var(--ink);
   }
-  .titlebar h1 {
-    margin: 8px 0 0;
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: clamp(28px, 7vw, 44px);
-    letter-spacing: 1px;
-    color: var(--ink);
-    text-shadow:
-      3px 3px 0 var(--yellow),
-      6px 6px 0 var(--pink);
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
   .titlebar .logo-tv {
     display: inline-block;
-    margin: 10px auto 4px;
+    margin: 38px auto 4px;
     padding: 14px;
     border: 4px solid var(--ink);
     border-radius: 22px;
-    background: #0c0a14;
-    box-shadow: 6px 6px 0 var(--ink);
+    background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
+    box-shadow: 6px 6px 0 var(--ink), inset 0 0 0 6px rgba(255,255,255,0.28);
     position: relative;
     max-width: min(460px, 90vw);
   }
@@ -118,9 +125,19 @@
     transform: translateX(-50%);
     width: 14px; height: 14px;
     border-radius: 50%;
-    background: var(--pink);
+    background: var(--yellow);
     border: 3px solid var(--ink);
   }
+  .titlebar .logo-tv .spark {
+    position: absolute;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--yellow);
+    text-shadow: 1.5px 1.5px 0 var(--ink);
+    animation: float 5s ease-in-out infinite;
+  }
+  .titlebar .logo-tv .spark-l { top: -18px; left: -16px; animation-delay: 0.4s; }
+  .titlebar .logo-tv .spark-r { bottom: -16px; right: -14px; animation-delay: 1.6s; }
   .titlebar .logo {
     display: block;
     width: 100%;
@@ -129,6 +146,31 @@
     border-radius: 10px;
     background: #fff;
     padding: 12px;
+    border: 3px solid var(--ink);
+  }
+  .titlebar .logo-tv .tv-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 0 4px;
+  }
+  .titlebar .logo-tv .dial {
+    flex: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+  }
+  .titlebar .logo-tv .grille {
+    flex: 1;
+    height: 16px;
+    border-radius: 6px;
+    border: 2px solid var(--ink);
+    background-color: rgba(255,255,255,0.6);
+    background-image: radial-gradient(var(--ink) 1.6px, transparent 1.9px);
+    background-size: 9px 9px;
   }
   .titlebar .sub {
     font-family: 'Jua', sans-serif;
@@ -183,10 +225,6 @@
     line-height: 1.45;
     margin: 6px 0 18px;
   }
-  .qtext .hl {
-    background: linear-gradient(transparent 55%, var(--yellow) 55%);
-    padding: 0 2px;
-  }
 
   .options {
     display: grid;
@@ -220,6 +258,10 @@
   .opt:active:not(:disabled) {
     transform: translate(2px, 2px);
     box-shadow: 1px 1px 0 var(--ink);
+  }
+  .opt:focus-visible {
+    outline: 3px solid var(--blue-deep);
+    outline-offset: 3px;
   }
   .opt .num {
     position: absolute;
@@ -329,6 +371,7 @@
   }
   .btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
   .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
   .btn.ghost { background: #fff; color: var(--ink); }
 
   .stickers {
@@ -393,9 +436,17 @@
   .topnote {
     font-family: 'Jua', sans-serif;
     text-align: center;
-    color: #6b6b6b;
+    color: #4a4a4a;
     margin-top: 12px;
     font-size: 13px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stickers span,
+    .confetti i,
+    .titlebar .logo-tv .spark,
+    .shake,
+    .result.show { animation: none !important; }
   }
 </style>
 </head>
@@ -412,10 +463,18 @@
 
 <main class="stage">
   <div class="titlebar">
+    <h1 class="visually-hidden">김규원의 캐치규! - 물빛정원편</h1>
     <span class="badge">성남TV</span>
     <div class="logo-tv">
       <span class="knob" aria-hidden="true"></span>
-      <img class="logo" src="logo_1.png" alt="캐치규 메인 로고" />
+      <span class="spark spark-l" aria-hidden="true">✦</span>
+      <span class="spark spark-r" aria-hidden="true">★</span>
+      <img class="logo" src="logo_1.png" alt="김규원의 캐치규! 물빛정원편 로고" />
+      <div class="tv-controls" aria-hidden="true">
+        <span class="dial"></span>
+        <span class="grille"></span>
+        <span class="dial"></span>
+      </div>
     </div>
     <span class="sub">맞히면 탈출 성공! 틀리면 1분 후 재도전!</span>
   </div>
@@ -428,7 +487,7 @@
     <p class="qtext" id="qtext"></p>
     <div class="options" id="options"></div>
 
-    <div class="result" id="result">
+    <div class="result" id="result" aria-live="polite">
       <div class="verdict" id="verdict"></div>
       <div class="explain" id="explain"></div>
     </div>
@@ -551,7 +610,7 @@
     const q = QUESTIONS[state.idx];
 
     els.qnum.textContent = 'Q' + (state.idx + 1);
-    els.qtext.innerHTML = escapeKeepHl(q.q);
+    els.qtext.innerHTML = escapeHtml(q.q);
     els.options.innerHTML = '';
     q.opts.forEach((text, i) => {
       const btn = document.createElement('button');
@@ -643,9 +702,6 @@
     return String(s).replace(/[&<>"']/g, c => ({
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
     }[c]));
-  }
-  function escapeKeepHl(s) {
-    return escapeHtml(s);
   }
 
   renderQuestion();

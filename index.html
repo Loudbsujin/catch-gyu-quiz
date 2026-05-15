@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>성남물빛정원 랜덤 퀴즈쇼!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --pink: #ff5fa2;
+    --pink-deep: #e8327b;
+    --yellow: #ffe14d;
+    --yellow-deep: #f6c90e;
+    --blue: #3ec1ff;
+    --blue-deep: #1a8cd8;
+    --green: #4ade80;
+    --red: #ff4d4d;
+    --ink: #1b1b1b;
+    --paper: #fff7d6;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0; padding: 0;
+    min-height: 100%;
+    font-family: 'Gowun Dodum', system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 10% 10%, #ffd6e7 0 14%, transparent 15%),
+      radial-gradient(circle at 90% 20%, #d6ecff 0 12%, transparent 13%),
+      radial-gradient(circle at 20% 90%, #d6ffe2 0 14%, transparent 15%),
+      radial-gradient(circle at 85% 85%, #ffe6c0 0 13%, transparent 14%),
+      var(--paper);
+    overflow-x: hidden;
+  }
+
+  body::before, body::after {
+    content: '';
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::before {
+    inset: 0;
+    background:
+      repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 2px, transparent 2px 18px);
+  }
+
+  .stage {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+
+  .titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .titlebar .badge {
+    display: inline-block;
+    background: var(--pink);
+    color: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-family: 'Jua', sans-serif;
+    font-size: 14px;
+    transform: rotate(-3deg);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .titlebar h1 {
+    margin: 8px 0 0;
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(28px, 7vw, 44px);
+    letter-spacing: 1px;
+    color: var(--ink);
+    text-shadow:
+      3px 3px 0 var(--yellow),
+      6px 6px 0 var(--pink);
+  }
+  .titlebar .sub {
+    font-family: 'Jua', sans-serif;
+    font-size: 14px;
+    color: #555;
+  }
+
+  .card {
+    background: #fff;
+    border: 4px solid var(--ink);
+    border-radius: 22px;
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 22px 20px;
+    position: relative;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -14px; left: 24px;
+    width: 60px; height: 22px;
+    background: rgba(255, 223, 0, 0.85);
+    transform: rotate(-6deg);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+  }
+
+  .qhead {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .qnum {
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: 12px;
+    padding: 4px 12px;
+    font-family: 'Jua', sans-serif;
+    font-size: 18px;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .qtag {
+    font-family: 'Jua', sans-serif;
+    color: var(--pink-deep);
+    font-size: 14px;
+  }
+
+  .qtext {
+    font-family: 'Jua', sans-serif;
+    font-size: clamp(20px, 4.5vw, 26px);
+    line-height: 1.45;
+    margin: 6px 0 18px;
+  }
+  .qtext .hl {
+    background: linear-gradient(transparent 55%, var(--yellow) 55%);
+    padding: 0 2px;
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 520px) {
+    .options { grid-template-columns: 1fr 1fr; }
+  }
+
+  .opt {
+    appearance: none;
+    text-align: left;
+    background: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 14px 14px 14px 50px;
+    font-family: 'Gowun Dodum', sans-serif;
+    font-size: 17px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s;
+    box-shadow: 4px 4px 0 var(--ink);
+    color: var(--ink);
+  }
+  .opt:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
+    background: #fff8e1;
+  }
+  .opt:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .opt .num {
+    position: absolute;
+    left: 10px; top: 50%;
+    transform: translateY(-50%);
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    border: 2.5px solid var(--ink);
+    color: #fff;
+    font-family: 'Jua', sans-serif;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .opt:nth-child(2) .num { background: var(--pink); }
+  .opt:nth-child(3) .num { background: var(--green); }
+  .opt:nth-child(4) .num { background: var(--yellow-deep); }
+
+  .opt.correct {
+    background: #e9ffd9;
+    border-color: #2ea043;
+    box-shadow: 4px 4px 0 #2ea043;
+  }
+  .opt.correct .num { background: #2ea043; }
+  .opt.wrong {
+    background: #ffe3e3;
+    border-color: #c92a2a;
+    box-shadow: 4px 4px 0 #c92a2a;
+  }
+  .opt.wrong .num { background: #c92a2a; }
+  .opt:disabled { cursor: not-allowed; opacity: 0.95; }
+
+  .result {
+    margin-top: 18px;
+    border: 3px dashed var(--ink);
+    border-radius: 18px;
+    padding: 16px;
+    background: #fffbe6;
+    display: none;
+  }
+  .result.show { display: block; animation: pop 0.4s ease; }
+  .result .verdict {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 30px;
+    letter-spacing: 1px;
+  }
+  .result.ok .verdict { color: #18a957; }
+  .result.no .verdict { color: #d83838; }
+  .result .explain {
+    margin-top: 8px;
+    font-family: 'Gowun Dodum', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .cooldown {
+    display: none;
+    margin-top: 14px;
+    text-align: center;
+    font-family: 'Jua', sans-serif;
+  }
+  .cooldown.show { display: block; }
+  .cooldown .timer {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 52px;
+    color: var(--pink-deep);
+    text-shadow: 3px 3px 0 var(--yellow);
+    line-height: 1;
+  }
+  .cooldown .label {
+    color: #444;
+    font-size: 15px;
+    margin-top: 6px;
+  }
+  .cooldown .ring {
+    width: 110px; height: 110px;
+    margin: 6px auto 4px;
+    position: relative;
+    display: grid; place-items: center;
+  }
+  .cooldown .ring svg { transform: rotate(-90deg); }
+  .cooldown .ring .center {
+    position: absolute; inset: 0; display: grid; place-items: center;
+  }
+
+  .footer-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    appearance: none;
+    border: 3px solid var(--ink);
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Jua', sans-serif;
+    font-size: 16px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+  .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn.ghost { background: #fff; color: var(--ink); }
+
+  .stickers {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .stickers span {
+    position: absolute;
+    font-size: 28px;
+    opacity: 0.7;
+    user-select: none;
+    animation: float 6s ease-in-out infinite;
+  }
+  .stickers span:nth-child(1){ top: 8%; left: 4%; animation-delay: 0s; }
+  .stickers span:nth-child(2){ top: 18%; right: 6%; animation-delay: 1.2s; }
+  .stickers span:nth-child(3){ top: 60%; left: 2%; animation-delay: 2.4s; }
+  .stickers span:nth-child(4){ top: 75%; right: 4%; animation-delay: 0.6s; }
+  .stickers span:nth-child(5){ top: 45%; right: 10%; animation-delay: 1.8s; }
+  .stickers span:nth-child(6){ top: 32%; left: 7%; animation-delay: 3.0s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-6deg); }
+    50% { transform: translateY(-14px) rotate(6deg); }
+  }
+  @keyframes pop {
+    0% { transform: scale(0.85); opacity: 0; }
+    60% { transform: scale(1.04); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+  .shake { animation: shake 0.5s; }
+
+  /* Confetti */
+  .confetti {
+    position: fixed;
+    pointer-events: none;
+    inset: 0;
+    overflow: hidden;
+    z-index: 5;
+  }
+  .confetti i {
+    position: absolute;
+    top: -20px;
+    width: 10px; height: 16px;
+    background: var(--pink);
+    transform: rotate(20deg);
+    animation: fall 2.4s linear forwards;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-20px) rotate(0deg); }
+    100% { transform: translateY(110vh) rotate(540deg); }
+  }
+
+  .topnote {
+    font-family: 'Jua', sans-serif;
+    text-align: center;
+    color: #6b6b6b;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="stickers" aria-hidden="true">
+  <span>★</span>
+  <span>♥</span>
+  <span>✿</span>
+  <span>✦</span>
+  <span>◆</span>
+  <span>✸</span>
+</div>
+
+<main class="stage">
+  <div class="titlebar">
+    <span class="badge">성남물빛정원 X 랜덤퀴즈쇼</span>
+    <h1>오늘의 한 문제!</h1>
+    <span class="sub">맞히면 끝, 틀리면 1분 후 새 문제 도전!</span>
+  </div>
+
+  <section class="card" id="card">
+    <div class="qhead">
+      <span class="qnum" id="qnum">Q?</span>
+      <span class="qtag">두구두구두구...</span>
+    </div>
+    <p class="qtext" id="qtext"></p>
+    <div class="options" id="options"></div>
+
+    <div class="result" id="result">
+      <div class="verdict" id="verdict"></div>
+      <div class="explain" id="explain"></div>
+    </div>
+
+    <div class="cooldown" id="cooldown">
+      <div class="ring">
+        <svg width="110" height="110">
+          <circle cx="55" cy="55" r="48" stroke="#ffe6f0" stroke-width="10" fill="none"/>
+          <circle id="ringFg" cx="55" cy="55" r="48" stroke="#ff5fa2" stroke-width="10" fill="none"
+                  stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="0"/>
+        </svg>
+        <div class="center"><div class="timer" id="timer">60</div></div>
+      </div>
+      <div class="label">잠시 후 새로운 랜덤 문제가 등장합니다!</div>
+    </div>
+
+    <div class="footer-bar" id="footer"></div>
+  </section>
+
+  <p class="topnote">© 성남물빛정원 - 즐거운 한 문제 되세요!</p>
+</main>
+
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+  const QUESTIONS = [
+    {
+      q: "지금 이 장소의 이름은?",
+      opts: ["성남물빛정원", "성남불빛정원", "성남문빛정원", "성남달빛정원"],
+      answer: 0,
+      explain: "여기는 <b>성남물빛정원</b>! 탄천을 따라 펼쳐진 복합문화공간이에요."
+    },
+    {
+      q: "성남물빛정원은 개장 이전 하수처리장으로 OO년 가까이 방치됐다, 몇 년일까?",
+      opts: ["5년", "10년", "30년", "90년"],
+      answer: 2,
+      explain: "1997년에 만들어진 하수처리장이지만 한 번도 가동되지 못하고 <b>30년 가까이</b> 방치된 공간이었습니다."
+    },
+    {
+      q: "성남 탄천에 살지 않는 동물은?",
+      opts: ["너구리", "반딧불이", "수달", "저스틴비버"],
+      answer: 3,
+      explain: "저스틴비버님은 미국에 살고 있죠. 성남시 탄천 물은 3년 연속 <b>‘1급수’</b> 수질을 유지하고 있어 버들치 등 45종 물속 생물, 천연기념물 수달까지 다양하게 살고 있습니다."
+    },
+    {
+      q: "이곳, 성남 물빛정원에서 볼 수 없는 풍경은?",
+      opts: ["클래식 공연", "피크닉", "탄천", "미술관"],
+      answer: 3,
+      explain: "탄천을 따라 다양한 풍경을 경험하는 성남물빛정원은 산책, 피크닉, 커피, 클래식공연까지 즐길 수 있는 복합문화공간입니다. 아직 <b>미술관</b>은 조성 전으로 향후 지하공간에 들어설 예정입니다."
+    },
+    {
+      q: "성남물빛정원 뮤직홀의 총괄 예술 감독은?",
+      opts: ["불새", "참새", "금난새", "종달새"],
+      answer: 2,
+      explain: "대한민국 세계적인 지휘자, <b>금난새</b>가 클래식을 해설하고 진행하는 공연이 성남물빛정원에서 정기적으로 열리고 성남시민 누구나 무료로 즐길 수 있습니다."
+    },
+    {
+      q: "성남시 공식 캐릭터의 이름은?",
+      opts: ["새남-새롱이", "성숙이-성칠이", "남칠이-남숙이", "뽀로로-루피"],
+      answer: 0,
+      explain: "성남시의 공식 캐릭터는 <b>새남-새롱이</b>입니다!"
+    },
+    {
+      q: "성남시에서 발행하는 재래시장 전용 상품권 이름은?",
+      opts: ["성남사랑상품권", "성남사랑지역화폐", "성남코인", "성남페이"],
+      answer: 0,
+      explain: "정답은 <b>성남사랑상품권</b>! 재래시장에서 알뜰하게 사용 가능해요."
+    },
+    {
+      q: "성남시가 운영하는 공공예식장 ‘성남솔로몬웨딩뜰’의 한 곳이자 현재 물빛정원 뮤직홀에 있는 웨딩뜰의 이름은?",
+      opts: ["아침마당", "성남마당", "하늘마당", "상상마당"],
+      answer: 2,
+      explain: "물빛정원 뮤직홀의 웨딩뜰 이름은 <b>하늘마당</b>입니다."
+    },
+    {
+      q: "성남시 어린이 돌봄 서비스는 ‘OO놀이터’입니다. OO에 들어갈 단어는?",
+      opts: ["성남", "신나", "해님달님", "환상의"],
+      answer: 2,
+      explain: "성남시 어린이 돌봄 서비스는 <b>‘해님달님놀이터’</b> 입니다."
+    }
+  ];
+
+  const COOLDOWN_SECONDS = 60;
+
+  const els = {
+    card: document.getElementById('card'),
+    qnum: document.getElementById('qnum'),
+    qtext: document.getElementById('qtext'),
+    options: document.getElementById('options'),
+    result: document.getElementById('result'),
+    verdict: document.getElementById('verdict'),
+    explain: document.getElementById('explain'),
+    cooldown: document.getElementById('cooldown'),
+    timer: document.getElementById('timer'),
+    ringFg: document.getElementById('ringFg'),
+    footer: document.getElementById('footer'),
+    confetti: document.getElementById('confetti')
+  };
+
+  let state = {
+    idx: -1,
+    locked: false,
+    cooldownTimer: null,
+    lastIdx: -1
+  };
+
+  function pickRandomIdx() {
+    if (QUESTIONS.length <= 1) return 0;
+    let n;
+    do {
+      n = Math.floor(Math.random() * QUESTIONS.length);
+    } while (n === state.lastIdx);
+    return n;
+  }
+
+  function renderQuestion() {
+    state.idx = pickRandomIdx();
+    state.lastIdx = state.idx;
+    state.locked = false;
+    const q = QUESTIONS[state.idx];
+
+    els.qnum.textContent = 'Q' + (state.idx + 1);
+    els.qtext.innerHTML = escapeKeepHl(q.q);
+    els.options.innerHTML = '';
+    q.opts.forEach((text, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.type = 'button';
+      btn.innerHTML = '<span class="num">' + (i + 1) + '</span>' + escapeHtml(text);
+      btn.addEventListener('click', () => onPick(i, btn));
+      els.options.appendChild(btn);
+    });
+
+    els.result.classList.remove('show', 'ok', 'no');
+    els.cooldown.classList.remove('show');
+    els.footer.innerHTML = '';
+    clearConfetti();
+  }
+
+  function onPick(i, btn) {
+    if (state.locked) return;
+    state.locked = true;
+    const q = QUESTIONS[state.idx];
+    const buttons = els.options.querySelectorAll('.opt');
+    buttons.forEach(b => b.disabled = true);
+
+    if (i === q.answer) {
+      btn.classList.add('correct');
+      els.result.classList.add('show', 'ok');
+      els.verdict.textContent = '딩동댕! 정답입니다!';
+      els.explain.innerHTML = q.explain || '훌륭해요!';
+      fireConfetti();
+      els.footer.innerHTML = '<button class="btn ghost" id="againBtn">다른 문제도 풀어보기</button>';
+      document.getElementById('againBtn').addEventListener('click', renderQuestion);
+    } else {
+      btn.classList.add('wrong');
+      buttons[q.answer].classList.add('correct');
+      els.card.classList.add('shake');
+      setTimeout(() => els.card.classList.remove('shake'), 600);
+      els.result.classList.add('show', 'no');
+      els.verdict.textContent = '땡! 아쉽지만 오답이에요';
+      els.explain.innerHTML = q.explain || '다음엔 꼭 맞혀봐요!';
+      startCooldown(COOLDOWN_SECONDS);
+    }
+  }
+
+  function startCooldown(seconds) {
+    els.cooldown.classList.add('show');
+    const total = seconds;
+    let left = seconds;
+    els.timer.textContent = left;
+    const circumference = 2 * Math.PI * 48;
+    els.ringFg.setAttribute('stroke-dasharray', circumference.toFixed(2));
+    els.ringFg.setAttribute('stroke-dashoffset', '0');
+
+    if (state.cooldownTimer) clearInterval(state.cooldownTimer);
+    state.cooldownTimer = setInterval(() => {
+      left--;
+      els.timer.textContent = left;
+      const progress = (total - left) / total;
+      els.ringFg.setAttribute('stroke-dashoffset', (circumference * progress).toFixed(2));
+      if (left <= 0) {
+        clearInterval(state.cooldownTimer);
+        state.cooldownTimer = null;
+        renderQuestion();
+      }
+    }, 1000);
+  }
+
+  function fireConfetti() {
+    const colors = ['#ff5fa2', '#ffe14d', '#3ec1ff', '#4ade80', '#f6c90e', '#a78bfa'];
+    const total = 80;
+    for (let k = 0; k < total; k++) {
+      const piece = document.createElement('i');
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = (Math.random() * 0.6) + 's';
+      piece.style.animationDuration = (1.6 + Math.random() * 1.6) + 's';
+      piece.style.width = (6 + Math.random() * 8) + 'px';
+      piece.style.height = (10 + Math.random() * 12) + 'px';
+      piece.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+      els.confetti.appendChild(piece);
+    }
+    setTimeout(clearConfetti, 3200);
+  }
+
+  function clearConfetti() {
+    els.confetti.innerHTML = '';
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+  function escapeKeepHl(s) {
+    return escapeHtml(s);
+  }
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

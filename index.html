@@ -88,13 +88,45 @@
       3px 3px 0 var(--yellow),
       6px 6px 0 var(--pink);
   }
+  .titlebar .logo-tv {
+    display: inline-block;
+    margin: 10px auto 4px;
+    padding: 14px;
+    border: 4px solid var(--ink);
+    border-radius: 22px;
+    background: #0c0a14;
+    box-shadow: 6px 6px 0 var(--ink);
+    position: relative;
+    max-width: min(460px, 90vw);
+  }
+  .titlebar .logo-tv::before,
+  .titlebar .logo-tv::after {
+    content: '';
+    position: absolute;
+    top: -28px;
+    width: 4px;
+    height: 26px;
+    background: var(--ink);
+    border-radius: 2px;
+    transform-origin: bottom center;
+  }
+  .titlebar .logo-tv::before { left: 22%; transform: rotate(-22deg); }
+  .titlebar .logo-tv::after  { right: 22%; transform: rotate(22deg); }
+  .titlebar .logo-tv .knob {
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--pink);
+    border: 3px solid var(--ink);
+  }
   .titlebar .logo {
     display: block;
-    max-width: min(420px, 80vw);
     width: 100%;
+    max-width: 420px;
     height: auto;
-    margin: 10px auto 2px;
-    filter: drop-shadow(4px 4px 0 var(--ink));
+    border-radius: 10px;
   }
   .titlebar .sub {
     font-family: 'Jua', sans-serif;
@@ -379,7 +411,10 @@
 <main class="stage">
   <div class="titlebar">
     <span class="badge">성남TV</span>
-    <img class="logo" src="logo.png" alt="메인 로고" />
+    <div class="logo-tv">
+      <span class="knob" aria-hidden="true"></span>
+      <img class="logo" src="logo_1.png" alt="캐치규 메인 로고" />
+    </div>
     <span class="sub">맞히면 탈출 성공! 틀리면 1분 후 재도전!</span>
   </div>
 
